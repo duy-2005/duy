@@ -514,7 +514,7 @@
     <div class="tabs">
       <button class="tab-btn active" data-tab="tab-form"><i class="fa-solid fa-file-pen"></i> Nhập báo cáo</button>
       <button class="tab-btn" data-tab="tab-list"><i class="fa-solid fa-table-list"></i> Danh sách ADR</button>
-      <button class="tab-btn" data-tab="tab-thongke"><i class="fa-solid fa-chart-pie"></i> Thống kê</button>
+      <button class="tab-btn" data-tab="tab-thongke" id="btnTabThongKe"><i class="fa-solid fa-chart-pie"></i> Thống kê</button>
     </div>
 
     <div class="container">
@@ -681,6 +681,14 @@
 
       <!-- ===================== TAB 3: THỐNG KÊ ===================== -->
       <div id="tab-thongke" class="tab-content">
+        
+        <!-- THÔNG BÁO TỪ CHỐI TRUY CẬP -->
+        <div id="tkTuChoi" style="display:none; text-align:center; padding: 80px 20px; color: var(--ink-soft);">
+           <i class="fa-solid fa-lock" style="font-size: 50px; color: var(--red-200); margin-bottom: 16px; display:block;"></i>
+           <h2 style="margin: 0 0 8px; color: var(--ink);">Không có quyền truy cập</h2>
+           <p>Tính năng Thống kê Biểu đồ chỉ dành cho bộ phận được phân quyền quản lý.</p>
+        </div>
+
         <div id="tkLoading">
           <div class="spinner-wrap">
             <div class="spinner"></div>
@@ -756,8 +764,12 @@
   </div> <!-- Kết thúc thẻ div main-app -->
 
   <script>
-    // Biến toàn cục lưu Khoa phòng hiện tại đang đăng nhập
+    // ================================================================
+    // BIẾN TOÀN CỤC BẢO MẬT PHÂN QUYỀN
+    // ================================================================
     var KHOA_DANG_NHAP = "";
+    var MAT_KHAU_DANG_NHAP = ""; // Lưu tạm để gửi lên máy chủ khi thống kê
+    var QUYEN_XEM_THONG_KE = false;
 
     // ================================================================
     // ---------- XỬ LÝ ĐĂNG NHẬP KHOA PHÒNG ----------
@@ -795,12 +807,23 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang kiểm tra...';
       btn.disabled = true;
 
-      // Gửi xuống Backend kiểm tra
+      // Gửi xuống Backend kiểm tra (Đã sửa nhận đối tượng thay vì boolean)
       google.script.run
-        .withSuccessHandler(function(isThanhCong) {
-          if (isThanhCong) {
-            // LƯU LẠI TÊN KHOA VÀO BIẾN TOÀN CỤC SAU KHI ĐĂNG NHẬP ĐÚNG
+        .withSuccessHandler(function(ketQua) {
+          
+          if (ketQua.hopLe === true) {
+            // LƯU LẠI THÔNG TIN VÀ QUYỀN VÀO BIẾN TOÀN CỤC
             KHOA_DANG_NHAP = khoa;
+            MAT_KHAU_DANG_NHAP = pass;
+            QUYEN_XEM_THONG_KE = ketQua.duocXemBieuDo;
+
+            // XỬ LÝ ẨN/HIỆN NÚT TAB THỐNG KÊ TRÊN GIAO DIỆN
+            var btnThongKe = document.getElementById("btnTabThongKe");
+            if (QUYEN_XEM_THONG_KE) {
+              btnThongKe.style.display = 'flex'; // Cho phép thấy nút thống kê
+            } else {
+              btnThongKe.style.display = 'none'; // Giấu hẳn nút thống kê đi
+            }
 
             // ĐĂNG NHẬP ĐÚNG: Tắt màn hình chờ, Mở phần mềm
             document.getElementById("login-screen").style.display = "none";
@@ -960,7 +983,7 @@
         .withFailureHandler(function (err) {
           document.getElementById('loadingMsg').textContent = '❌ Lỗi tải dữ liệu: ' + err.message;
         })
-        .getPatients(KHOA_DANG_NHAP); // LỆNH TRUYỀN TÊN KHOA XUỐNG BACKEND TẠI ĐÂY
+        .getPatients(KHOA_DANG_NHAP);
     }
 
     function boDauTV(str) {
@@ -1201,6 +1224,14 @@
     Chart.defaults.color = '#6b7280';
 
     function loadThongKe() {
+      
+      // KIỂM TRA QUYỀN TRƯỚC KHI GỌI MÁY CHỦ
+      if (!QUYEN_XEM_THONG_KE) {
+        document.getElementById('tkLoading').style.display = 'none';
+        document.getElementById('tkTuChoi').style.display = 'block';
+        return; 
+      }
+
       if (daTaiThongKe) return;
       daTaiThongKe = true;
 
@@ -1228,7 +1259,7 @@
           box.style.display = 'block';
           box.textContent = '❌ Lỗi hệ thống: ' + err.message;
         })
-        .thongKeADR();
+        .thongKeADR(KHOA_DANG_NHAP, MAT_KHAU_DANG_NHAP); // GỬI TÊN KHOA VÀ MK XUỐNG MÁY CHỦ
     }
 
     function ve_thong_ke(res) {
