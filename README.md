@@ -410,13 +410,159 @@
       letter-spacing: 0.1px;
     }
 
-    .adr-detail { display: none; background: #fffafa; border-top: 1px dashed var(--red-200); padding: 18px 20px; }
+    .adr-detail { display: none; background: #f6f3f3; border-top: 1px dashed var(--red-200); padding: 18px 20px; }
     .adr-card.open .adr-detail { display: block; }
+
+    .adr-detail-section-box {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 2px rgba(185,28,28,0.04);
+    }
+    .adr-detail-section-box:last-child { margin-bottom: 0; }
+    .adr-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--red-600);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--red-100);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .adr-section-title i { font-size: 12px; color: var(--red-500); }
 
     .adr-detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px 22px; }
     .adr-detail-item { font-size: 13px; border-bottom: 1px dotted var(--line); padding-bottom: 7px; }
     .adr-detail-item .adr-field-label { margin-bottom: 3px; }
     .adr-detail-item .adr-field-value { white-space: normal; word-break: break-word; font-weight: 400; }
+
+    /* ============ LAYOUT 2 CỘT: DANH SÁCH TRÁI / CHI TIẾT PHẢI ============ */
+    .master-detail-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .master-detail-left { min-width: 0; }
+    .master-detail-right { min-width: 0; }
+
+    #cardList {
+      max-height: calc(100vh - 260px);
+      overflow-y: auto;
+      margin: 4px -8px -8px;
+      padding: 0 8px 8px;
+    }
+
+    /* ---- Dòng danh sách gọn bên trái ---- */
+    .adr-list-row {
+      border: 1px solid var(--line);
+      border-left: 4px solid transparent;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      background: #fff;
+      transition: background 0.12s, border-color 0.12s, box-shadow 0.12s;
+    }
+    .adr-list-row:hover { background: var(--red-50); }
+    .adr-list-row.active {
+      background: var(--red-50);
+      border-left-color: var(--red-600);
+      border-color: var(--red-200);
+      box-shadow: 0 2px 10px rgba(220,38,38,0.12);
+    }
+    .adr-list-row .row-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    .adr-list-row .row-ten {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--ink);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .adr-list-row.active .row-ten { color: var(--red-700); }
+    .adr-list-row .row-thoigian {
+      font-size: 11px;
+      color: var(--muted);
+      flex-shrink: 0;
+      font-weight: 500;
+    }
+    .adr-list-row .row-nb {
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .adr-list-row .row-mota {
+      font-size: 12.5px;
+      color: #6b7280;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ---- Khung chi tiết bên phải ---- */
+    .detail-panel-card {
+      position: sticky;
+      top: 132px;
+      max-height: calc(100vh - 160px);
+      overflow-y: auto;
+    }
+    .detail-panel-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 70px 20px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+    }
+    .detail-panel-empty i { font-size: 34px; color: var(--red-200); }
+
+    .detail-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid var(--red-100);
+    }
+    .detail-panel-header h2 {
+      margin: 0 0 4px;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .detail-panel-header .sub {
+      font-size: 12.5px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    @media (max-width: 980px) {
+      .master-detail-layout { grid-template-columns: 1fr; }
+      .detail-panel-card { position: static; max-height: none; }
+      #cardList { max-height: none; }
+    }
 
     .adr-detail-item.co-the-sua .adr-field-label { color: var(--red-600); }
     .adr-detail-item.co-the-sua .adr-field-label::after { content: " ✎"; }
@@ -651,33 +797,41 @@
 
       <!-- ===================== TAB 2: DANH SÁCH ===================== -->
       <div id="tab-list" class="tab-content">
-        <div class="card">
-          <div class="search-wrap">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="searchBox" placeholder="Tìm theo tên bệnh nhân, mã hồ sơ, mô tả ADR...">
-          </div>
-          <div id="resultCount"></div>
+        <div class="master-detail-layout">
 
-          <div id="loadingMsg">
-            <div class="spinner-wrap">
-              <div class="spinner"></div>
-              <div>Đang tải dữ liệu...</div>
+          <div class="master-detail-left">
+            <div class="card" style="padding: 18px;">
+              <div class="search-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchBox" placeholder="Tìm theo tên bệnh nhân, mã hồ sơ, mô tả ADR...">
+              </div>
+              <div id="resultCount"></div>
+
+              <div id="loadingMsg">
+                <div class="spinner-wrap">
+                  <div class="spinner"></div>
+                  <div>Đang tải dữ liệu...</div>
+                </div>
+              </div>
+
+              <div id="emptyMsg" style="display:none;">
+                <i class="fa-regular fa-folder-open"></i>
+                Chưa có dữ liệu trong sheet "tong hop ADR".
+              </div>
+
+              <div id="cardList"></div>
             </div>
           </div>
 
-          <div id="emptyMsg" style="display:none;">
-            <i class="fa-regular fa-folder-open"></i>
-            Chưa có dữ liệu trong sheet "tong hop ADR".
+          <div class="master-detail-right">
+            <div class="card detail-panel-card" id="detailPanel">
+              <div class="detail-panel-empty">
+                <i class="fa-solid fa-hand-pointer"></i>
+                <div>Chọn 1 báo cáo bên trái để xem chi tiết</div>
+              </div>
+            </div>
           </div>
 
-          <div class="list-headbar">
-            <div></div>
-            <div>Bệnh nhân</div>
-            <div>Thời gian</div>
-            <div>Thông tin NB</div>
-            <div>Mô tả ADR</div>
-          </div>
-          <div id="cardList"></div>
         </div>
       </div>
 
@@ -932,8 +1086,60 @@
 
     var INDEX_TOM_TAT = COT_TOM_TAT.map(chuCaiSangIndex);
 
+    // ============================================================
+    // 👉 NHÓM HIỂN THỊ Ở PHẦN CHI TIẾT (chỉ để sắp xếp cho dễ nhìn,
+    //    không ảnh hưởng dữ liệu). Muốn thêm/bớt/đổi cột trong 1 nhóm,
+    //    chỉ cần sửa đúng TÊN TIÊU ĐỀ trong mảng "cot" tương ứng.
+    //    Cột nào không nằm trong nhóm nào sẽ tự rơi vào nhóm "Khác".
+    // ============================================================
+    var CAC_NHOM_CHI_TIET = [
+      {
+        ten: 'Thông tin báo cáo', icon: 'fa-clipboard-list',
+        cot: ['SỐ BÁO CÁO ADR', 'SỐ THUỐC NGHI NGỜ ADR', 'Note ca ADR', 'MÃ HỒ SƠ', 'MÃ NGƯỜI BỆNH',
+              'KHOA BÁO CÁO/ XỬ TRÍ ADR', 'NGHỀ NGHIỆP người báo cáo', 'NGƯỜI BÁO CÁO', 'ĐIỆN THOẠI',
+              'Đơn vị báo cáo\n(nơi báo cáo)', 'Đơn vị báo cáo (nơi báo cáo)', 'DẠNG BÁO CÁO',
+              'Ngày báo cáo\n(mục 23 trong biểu mẫu BC ADR)', 'Ngày báo cáo (mục 23 trong biểu mẫu BC ADR)']
+      },
+      {
+        ten: 'Thông tin bệnh nhân', icon: 'fa-user',
+        cot: ['Giới tính', 'Tuổi', 'Cân nặng', 'Ngày sinh', 'Tiền sử bệnh/ dị ứng']
+      },
+      {
+        ten: 'Diễn biến phản ứng ADR', icon: 'fa-triangle-exclamation',
+        cot: ['PHẢN ỨNG XUẤT HIỆN SAU BAO LÂU',
+              'Ngày xuất hiện phản ứng ADR\n(mục 5 trong biểu mẫu BC ADR)',
+              'Ngày xuất hiện phản ứng ADR (mục 5 trong biểu mẫu BC ADR)',
+              'Mô tả biểu hiện ADR', 'Mức độ nghiêm trọng', 'CÁC XÉT NGHIỆM LIÊN QUAN',
+              'CÁCH XỬ TRÍ', 'Kết quả sau khi xử trí ADR']
+      },
+      {
+        ten: 'Thuốc nghi ngờ gây ADR', icon: 'fa-pills',
+        cot: ['HOẠT CHẤT nghi ngờ ADR', 'Nhóm thuốc', 'Tên phân nhóm',
+              'Thuốc (tên gốc và tên thương mại)', 'Dạng bào chế, hàm lượng', 'Nhà sản xuất',
+              'Số lô.', 'Số lô', 'Liều dùng 1 lần.', 'Liều dùng 1 lần', 'SỐ LẦN DÙNG TRONG NGÀY',
+              'Đường dùng.', 'Đường dùng', 'NGÀY BẮT ĐẦU ĐIỀU TRỊ', 'NGÀY KẾT THÚC ĐIỀU TRỊ',
+              'LÝ DO DÙNG THUỐC',
+              'SAU KHI NGỪNG/GIẢM LIỀU CỦA THUỐC BỊ NGHI NGỜ, PHẢN ỨNG CÓ ĐƯỢC CẢI THIỆN KHÔNG',
+              'TÁI SỬ DỤNG THUỐC BỊ NGHI NGỜ CÓ XUẤT HIỆN LẠI PHẢN ỨNG KHÔNG']
+      },
+      {
+        ten: 'Thuốc dùng đồng thời', icon: 'fa-capsules',
+        cot: ['THUỐC DÙNG ĐỒNG THỜI 1', 'TDĐT 2', 'TDĐT 3', 'TDĐT 4', 'TDĐT 5', 'TDĐT 6', 'TDĐT 7', 'TDĐT 8']
+      },
+      {
+        ten: 'Đánh giá chuyên môn', icon: 'fa-stethoscope',
+        cot: ['ĐÁNH GIÁ MỐI LIÊN QUAN GIỮA THUỐC VÀ ADR', 'ĐƠN VỊ THẨM ĐỊNH ADR THEO THANG NÀO?',
+              'Ghi chú của Dược sĩ', 'PHẦN BÌNH LUẬN CỦA CBYT', 'link PDF ADR']
+      }
+    ];
+
+    function chuanHoaTenCot(s) {
+      return String(s || '').replace(/[\r\n]+/g, ' ').trim().replace(/\s+/g, ' ').toLowerCase();
+    }
+
     var COT_DUOC_SUA = [];
     var INDEX_DUOC_SUA = [];
+    var TEN_COT_AN = []; // danh sách TÊN TIÊU ĐỀ bị ẩn khỏi phần chi tiết (lấy từ layDanhSachCotAn())
 
     function loadPatients() {
       if (daTaiDuLieu) return; 
@@ -947,14 +1153,35 @@
         .withSuccessHandler(function (cfg) {
           COT_DUOC_SUA = (cfg && cfg.success && cfg.cot) ? cfg.cot : [];
           INDEX_DUOC_SUA = COT_DUOC_SUA.map(chuCaiSangIndex);
-          taiDanhSachThat();
+          taiCauHinhCotAn();
         })
         .withFailureHandler(function () {
           COT_DUOC_SUA = [];
           INDEX_DUOC_SUA = [];
-          taiDanhSachThat();
+          taiCauHinhCotAn();
         })
         .layDanhSachCotDuocSua();
+    }
+
+    function taiCauHinhCotAn() {
+      google.script.run
+        .withSuccessHandler(function (cfg) {
+          TEN_COT_AN = (cfg && cfg.success && cfg.ten) ? cfg.ten : [];
+          taiDanhSachThat();
+        })
+        .withFailureHandler(function () {
+          TEN_COT_AN = [];
+          taiDanhSachThat();
+        })
+        .layDanhSachCotAn();
+    }
+
+    // So khớp tên tiêu đề với danh sách bị ẩn (không phân biệt hoa/thường, khoảng trắng thừa)
+    function coTrongDanhSachAn(tieuDe) {
+      var chuan = String(tieuDe || '').trim().toLowerCase();
+      return TEN_COT_AN.some(function (t) {
+        return String(t).trim().toLowerCase() === chuan;
+      });
     }
 
     function taiDanhSachThat() {
@@ -996,6 +1223,8 @@
         .toLowerCase();
     }
 
+    var itemDangChon = null; // báo cáo đang được chọn xem chi tiết (giữ nguyên khi tìm kiếm nếu còn trong danh sách)
+
     function ve_danh_sach(items) {
       var cardList = document.getElementById('cardList');
       cardList.innerHTML = '';
@@ -1005,230 +1234,302 @@
 
       if (items.length === 0) {
         cardList.innerHTML = '<div style="padding:20px; text-align:center; color:#9ca3af;">Không tìm thấy báo cáo phù hợp.</div>';
+        if (itemDangChon) { itemDangChon = null; }
         return;
       }
 
+      var conKhopDuocChon = false;
+
       items.forEach(function (item) {
         var row = item.row;
-        var soDong = item.soDong;
 
-        var card = document.createElement('div');
-        card.className = 'adr-card';
+        var rowEl = document.createElement('div');
+        rowEl.className = 'adr-list-row';
 
-        var summary = document.createElement('div');
-        summary.className = 'adr-summary';
+        var top = document.createElement('div');
+        top.className = 'row-top';
+        var ten = document.createElement('div');
+        ten.className = 'row-ten';
+        ten.textContent = row[INDEX_TOM_TAT[0]] || 'Không rõ tên';
+        var thoiGian = document.createElement('div');
+        thoiGian.className = 'row-thoigian';
+        thoiGian.textContent = row[INDEX_TOM_TAT[1]] || '';
+        top.appendChild(ten);
+        top.appendChild(thoiGian);
 
-        var chevron = document.createElement('span');
-        chevron.className = 'adr-chevron';
-        chevron.textContent = '▶';
-        summary.appendChild(chevron);
+        var nb = document.createElement('div');
+        nb.className = 'row-nb';
+        nb.textContent = row[INDEX_TOM_TAT[2]] || '';
 
-        INDEX_TOM_TAT.forEach(function (colIndex) {
-          var wrap = document.createElement('div');
-          var label = document.createElement('div');
-          label.className = 'adr-field-label';
-          label.textContent = TAT_CA_HEADERS[colIndex] || '';
-          var value = document.createElement('div');
-          value.className = 'adr-field-value';
-          var raw = row[colIndex];
-          value.textContent = (raw === null || raw === undefined || raw === '') ? '—' : raw;
-          wrap.appendChild(label);
-          wrap.appendChild(value);
-          summary.appendChild(wrap);
-        });
+        var mota = document.createElement('div');
+        mota.className = 'row-mota';
+        mota.textContent = row[INDEX_TOM_TAT[3]] || '';
 
-        summary.addEventListener('click', function () {
-          card.classList.toggle('open');
-          chevron.textContent = card.classList.contains('open') ? '▼' : '▶';
-        });
+        rowEl.appendChild(top);
+        rowEl.appendChild(nb);
+        rowEl.appendChild(mota);
 
-        var detail = document.createElement('div');
-        detail.className = 'adr-detail';
-        var grid = document.createElement('div');
-        grid.className = 'adr-detail-grid';
-
-        var oCoTheSua = [];
-
-        row.forEach(function (cell, colIndex) {
-          if (INDEX_TOM_TAT.indexOf(colIndex) !== -1) return;
-
-          var viTriTrongCotSua = INDEX_DUOC_SUA.indexOf(colIndex);
-          var laCotDuocSua = viTriTrongCotSua !== -1;
-
-          if (!laCotDuocSua && (cell === null || cell === undefined || cell === '')) return;
-
-          var itemEl = document.createElement('div');
-          itemEl.className = 'adr-detail-item' + (laCotDuocSua ? ' co-the-sua' : '');
-
-          var lbl = document.createElement('div');
-          lbl.className = 'adr-field-label';
-          lbl.textContent = TAT_CA_HEADERS[colIndex] || ('Cột ' + (colIndex + 1));
-
-          var val = document.createElement('div');
-          val.className = 'adr-field-value';
-          val.textContent = (cell === null || cell === undefined || cell === '') ? '—' : cell;
-
-          itemEl.appendChild(lbl);
-          itemEl.appendChild(val);
-          grid.appendChild(itemEl);
-
-          if (laCotDuocSua) {
-            oCoTheSua.push({
-              colIndex: colIndex,
-              chuCai: COT_DUOC_SUA[viTriTrongCotSua],
-              valueDiv: val,
-              giaTriGoc: (cell === null || cell === undefined) ? '' : cell
-            });
-          }
-        });
-
-        detail.appendChild(grid);
-
-        var toolbar = document.createElement('div');
-        toolbar.className = 'adr-edit-toolbar';
-
-        if (oCoTheSua.length > 0) {
-          var btnSua = document.createElement('button');
-          btnSua.className = 'adr-btn-sm adr-btn-edit';
-          btnSua.innerHTML = '<i class="fa-solid fa-pen"></i> Sửa';
-
-          var btnLuu = document.createElement('button');
-          btnLuu.className = 'adr-btn-sm adr-btn-save';
-          btnLuu.innerHTML = '<i class="fa-solid fa-check"></i> Lưu';
-          btnLuu.style.display = 'none';
-
-          var btnHuy = document.createElement('button');
-          btnHuy.className = 'adr-btn-sm adr-btn-cancel';
-          btnHuy.innerHTML = 'Hủy';
-          btnHuy.style.display = 'none';
-
-          var msgEl = document.createElement('span');
-          msgEl.className = 'adr-save-msg';
-
-          toolbar.appendChild(btnSua);
-          toolbar.appendChild(btnLuu);
-          toolbar.appendChild(btnHuy);
-          toolbar.appendChild(msgEl);
-
-          btnSua.addEventListener('click', function (e) {
-            e.stopPropagation();
-            oCoTheSua.forEach(function (o) {
-              var input = document.createElement('input');
-              input.type = 'text';
-              input.className = 'adr-edit-input';
-              input.value = o.giaTriGoc;
-              o.valueDiv.innerHTML = '';
-              o.valueDiv.appendChild(input);
-              o.inputEl = input;
-            });
-            btnSua.style.display = 'none';
-            btnLuu.style.display = '';
-            btnHuy.style.display = '';
-            msgEl.textContent = '';
-          });
-
-          btnHuy.addEventListener('click', function (e) {
-            e.stopPropagation();
-            oCoTheSua.forEach(function (o) {
-              o.valueDiv.textContent = (o.giaTriGoc === '') ? '—' : o.giaTriGoc;
-            });
-            btnSua.style.display = '';
-            btnLuu.style.display = 'none';
-            btnHuy.style.display = 'none';
-            msgEl.textContent = '';
-          });
-
-          btnLuu.addEventListener('click', function (e) {
-            e.stopPropagation();
-            btnLuu.disabled = true;
-            btnHuy.disabled = true;
-            msgEl.className = 'adr-save-msg';
-            msgEl.textContent = 'Đang lưu...';
-
-            var capNhat = {};
-            oCoTheSua.forEach(function (o) {
-              capNhat[o.chuCai] = o.inputEl ? o.inputEl.value : o.giaTriGoc;
-            });
-
-            google.script.run
-              .withSuccessHandler(function (res) {
-                btnLuu.disabled = false;
-                btnHuy.disabled = false;
-
-                if (!res.success) {
-                  msgEl.className = 'adr-save-msg err';
-                  msgEl.textContent = '❌ ' + res.message;
-                  return;
-                }
-
-                oCoTheSua.forEach(function (o) {
-                  var giaTriMoi = o.inputEl ? o.inputEl.value : o.giaTriGoc;
-                  o.giaTriGoc = giaTriMoi;
-                  row[o.colIndex] = giaTriMoi;
-                  o.valueDiv.textContent = (giaTriMoi === '') ? '—' : giaTriMoi;
-                });
-
-                btnSua.style.display = '';
-                btnLuu.style.display = 'none';
-                btnHuy.style.display = 'none';
-                msgEl.className = 'adr-save-msg ok';
-                msgEl.textContent = '✔ Đã lưu';
-                setTimeout(function () { msgEl.textContent = ''; }, 2500);
-              })
-              .withFailureHandler(function (err) {
-                btnLuu.disabled = false;
-                btnHuy.disabled = false;
-                msgEl.className = 'adr-save-msg err';
-                msgEl.textContent = '❌ Lỗi hệ thống: ' + err.message;
-              })
-              .suaBaoCao(soDong, capNhat);
-          });
+        if (itemDangChon && itemDangChon.soDong === item.soDong) {
+          rowEl.classList.add('active');
+          conKhopDuocChon = true;
         }
 
-        // ----- Nút In PDF (luôn có, không phụ thuộc có cột được sửa hay không) -----
-        var btnInPdf = document.createElement('button');
-        btnInPdf.className = 'adr-btn-sm adr-btn-print';
-        btnInPdf.innerHTML = '<i class="fa-solid fa-file-pdf"></i> In PDF';
+        rowEl.addEventListener('click', function () {
+          document.querySelectorAll('.adr-list-row').forEach(function (r) { r.classList.remove('active'); });
+          rowEl.classList.add('active');
+          itemDangChon = item;
+          ve_chi_tiet(item);
+        });
 
-        var msgPdf = document.createElement('span');
-        msgPdf.className = 'adr-save-msg';
+        cardList.appendChild(rowEl);
+      });
 
-        toolbar.appendChild(btnInPdf);
-        toolbar.appendChild(msgPdf);
+      // Nếu báo cáo đang chọn không còn trong danh sách hiện tại (bị lọc mất do tìm kiếm) -> bỏ chọn
+      if (itemDangChon && !conKhopDuocChon) {
+        itemDangChon = null;
+        var panel = document.getElementById('detailPanel');
+        panel.innerHTML = '<div class="detail-panel-empty"><i class="fa-solid fa-hand-pointer"></i><div>Chọn 1 báo cáo bên trái để xem chi tiết</div></div>';
+      }
+    }
 
-        btnInPdf.addEventListener('click', function (e) {
+    // Vẽ toàn bộ chi tiết (nhóm theo chủ đề) + thanh Sửa/Lưu/Hủy + In PDF vào khung bên phải
+    function ve_chi_tiet(item) {
+      var row = item.row;
+      var soDong = item.soDong;
+
+      var panel = document.getElementById('detailPanel');
+      panel.innerHTML = '';
+
+      var header = document.createElement('div');
+      header.className = 'detail-panel-header';
+      var headerLeft = document.createElement('div');
+      var h2 = document.createElement('h2');
+      h2.textContent = row[INDEX_TOM_TAT[0]] || 'Không rõ tên';
+      var sub = document.createElement('div');
+      sub.className = 'sub';
+      sub.innerHTML = '<i class="fa-regular fa-clock"></i> ' + (row[INDEX_TOM_TAT[1]] || '—') +
+        ' &nbsp;•&nbsp; ' + (row[INDEX_TOM_TAT[2]] || '—');
+      headerLeft.appendChild(h2);
+      headerLeft.appendChild(sub);
+      header.appendChild(headerLeft);
+      panel.appendChild(header);
+
+      var oCoTheSua = [];
+
+      var cotHopLe = [];
+      row.forEach(function (cell, colIndex) {
+        if (INDEX_TOM_TAT.indexOf(colIndex) !== -1) return;
+        if (coTrongDanhSachAn(TAT_CA_HEADERS[colIndex])) return;
+        var laCotDuocSua = INDEX_DUOC_SUA.indexOf(colIndex) !== -1;
+        if (!laCotDuocSua && (cell === null || cell === undefined || cell === '')) return;
+        cotHopLe.push({ colIndex: colIndex, tieuDeChuan: chuanHoaTenCot(TAT_CA_HEADERS[colIndex]) });
+      });
+
+      var daDùng = {};
+
+      function taoOChiTiet(colIndex) {
+        var cell = row[colIndex];
+        var viTriTrongCotSua = INDEX_DUOC_SUA.indexOf(colIndex);
+        var laCotDuocSua = viTriTrongCotSua !== -1;
+
+        var itemEl = document.createElement('div');
+        itemEl.className = 'adr-detail-item' + (laCotDuocSua ? ' co-the-sua' : '');
+
+        var lbl = document.createElement('div');
+        lbl.className = 'adr-field-label';
+        lbl.textContent = TAT_CA_HEADERS[colIndex] || ('Cột ' + (colIndex + 1));
+
+        var val = document.createElement('div');
+        val.className = 'adr-field-value';
+        val.textContent = (cell === null || cell === undefined || cell === '') ? '—' : cell;
+
+        itemEl.appendChild(lbl);
+        itemEl.appendChild(val);
+
+        if (laCotDuocSua) {
+          oCoTheSua.push({
+            colIndex: colIndex,
+            chuCai: COT_DUOC_SUA[viTriTrongCotSua],
+            valueDiv: val,
+            giaTriGoc: (cell === null || cell === undefined) ? '' : cell
+          });
+        }
+        return itemEl;
+      }
+
+      function taoNhom(tieuDeNhom, icon, danhSachColIndex) {
+        var sectionBox = document.createElement('div');
+        sectionBox.className = 'adr-detail-section-box';
+
+        var title = document.createElement('div');
+        title.className = 'adr-section-title';
+        title.innerHTML = '<i class="fa-solid ' + icon + '"></i> ' + tieuDeNhom;
+        sectionBox.appendChild(title);
+
+        var grid = document.createElement('div');
+        grid.className = 'adr-detail-grid';
+        danhSachColIndex.forEach(function (colIndex) {
+          grid.appendChild(taoOChiTiet(colIndex));
+        });
+        sectionBox.appendChild(grid);
+        return sectionBox;
+      }
+
+      CAC_NHOM_CHI_TIET.forEach(function (nhom) {
+        var tenChuanTrongNhom = nhom.cot.map(chuanHoaTenCot);
+        var colIndexKhopNhom = cotHopLe
+          .filter(function (c) { return !daDùng[c.colIndex] && tenChuanTrongNhom.indexOf(c.tieuDeChuan) !== -1; })
+          .map(function (c) { return c.colIndex; });
+
+        if (colIndexKhopNhom.length === 0) return;
+        colIndexKhopNhom.forEach(function (ci) { daDùng[ci] = true; });
+        panel.appendChild(taoNhom(nhom.ten, nhom.icon, colIndexKhopNhom));
+      });
+
+      var conLai = cotHopLe.filter(function (c) { return !daDùng[c.colIndex]; }).map(function (c) { return c.colIndex; });
+      if (conLai.length > 0) {
+        panel.appendChild(taoNhom('Khác', 'fa-ellipsis', conLai));
+      }
+
+      var toolbar = document.createElement('div');
+      toolbar.className = 'adr-edit-toolbar';
+
+      if (oCoTheSua.length > 0) {
+        var btnSua = document.createElement('button');
+        btnSua.className = 'adr-btn-sm adr-btn-edit';
+        btnSua.innerHTML = '<i class="fa-solid fa-pen"></i> Sửa';
+
+        var btnLuu = document.createElement('button');
+        btnLuu.className = 'adr-btn-sm adr-btn-save';
+        btnLuu.innerHTML = '<i class="fa-solid fa-check"></i> Lưu';
+        btnLuu.style.display = 'none';
+
+        var btnHuy = document.createElement('button');
+        btnHuy.className = 'adr-btn-sm adr-btn-cancel';
+        btnHuy.innerHTML = 'Hủy';
+        btnHuy.style.display = 'none';
+
+        var msgEl = document.createElement('span');
+        msgEl.className = 'adr-save-msg';
+
+        toolbar.appendChild(btnSua);
+        toolbar.appendChild(btnLuu);
+        toolbar.appendChild(btnHuy);
+        toolbar.appendChild(msgEl);
+
+        btnSua.addEventListener('click', function (e) {
           e.stopPropagation();
-          btnInPdf.disabled = true;
-          msgPdf.className = 'adr-save-msg';
-          msgPdf.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tạo PDF...';
+          oCoTheSua.forEach(function (o) {
+            var input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'adr-edit-input';
+            input.value = o.giaTriGoc;
+            o.valueDiv.innerHTML = '';
+            o.valueDiv.appendChild(input);
+            o.inputEl = input;
+          });
+          btnSua.style.display = 'none';
+          btnLuu.style.display = '';
+          btnHuy.style.display = '';
+          msgEl.textContent = '';
+        });
+
+        btnHuy.addEventListener('click', function (e) {
+          e.stopPropagation();
+          oCoTheSua.forEach(function (o) {
+            o.valueDiv.textContent = (o.giaTriGoc === '') ? '—' : o.giaTriGoc;
+          });
+          btnSua.style.display = '';
+          btnLuu.style.display = 'none';
+          btnHuy.style.display = 'none';
+          msgEl.textContent = '';
+        });
+
+        btnLuu.addEventListener('click', function (e) {
+          e.stopPropagation();
+          btnLuu.disabled = true;
+          btnHuy.disabled = true;
+          msgEl.className = 'adr-save-msg';
+          msgEl.textContent = 'Đang lưu...';
+
+          var capNhat = {};
+          oCoTheSua.forEach(function (o) {
+            capNhat[o.chuCai] = o.inputEl ? o.inputEl.value : o.giaTriGoc;
+          });
 
           google.script.run
             .withSuccessHandler(function (res) {
-              btnInPdf.disabled = false;
+              btnLuu.disabled = false;
+              btnHuy.disabled = false;
 
               if (!res.success) {
-                msgPdf.className = 'adr-save-msg err';
-                msgPdf.textContent = '❌ ' + res.message;
+                msgEl.className = 'adr-save-msg err';
+                msgEl.textContent = '❌ ' + res.message;
                 return;
               }
 
-              msgPdf.className = 'adr-save-msg ok';
-              msgPdf.innerHTML = '✔ Đã tạo — <a href="' + res.url + '" target="_blank" rel="noopener">Mở PDF</a>';
+              oCoTheSua.forEach(function (o) {
+                var giaTriMoi = o.inputEl ? o.inputEl.value : o.giaTriGoc;
+                o.giaTriGoc = giaTriMoi;
+                row[o.colIndex] = giaTriMoi;
+                o.valueDiv.textContent = (giaTriMoi === '') ? '—' : giaTriMoi;
+              });
+
+              btnSua.style.display = '';
+              btnLuu.style.display = 'none';
+              btnHuy.style.display = 'none';
+              msgEl.className = 'adr-save-msg ok';
+              msgEl.textContent = '✔ Đã lưu';
+              setTimeout(function () { msgEl.textContent = ''; }, 2500);
             })
             .withFailureHandler(function (err) {
-              btnInPdf.disabled = false;
-              msgPdf.className = 'adr-save-msg err';
-              msgPdf.textContent = '❌ Lỗi hệ thống: ' + err.message;
+              btnLuu.disabled = false;
+              btnHuy.disabled = false;
+              msgEl.className = 'adr-save-msg err';
+              msgEl.textContent = '❌ Lỗi hệ thống: ' + err.message;
             })
-            .xuatPdfBaoCao(soDong);
+            .suaBaoCao(soDong, capNhat);
         });
+      }
 
-        detail.appendChild(toolbar);
+      var btnInPdf = document.createElement('button');
+      btnInPdf.className = 'adr-btn-sm adr-btn-print';
+      btnInPdf.innerHTML = '<i class="fa-solid fa-file-pdf"></i> In PDF';
 
-        card.appendChild(summary);
-        card.appendChild(detail);
-        cardList.appendChild(card);
+      var msgPdf = document.createElement('span');
+      msgPdf.className = 'adr-save-msg';
+
+      toolbar.appendChild(btnInPdf);
+      toolbar.appendChild(msgPdf);
+
+      btnInPdf.addEventListener('click', function (e) {
+        e.stopPropagation();
+        btnInPdf.disabled = true;
+        msgPdf.className = 'adr-save-msg';
+        msgPdf.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tạo PDF...';
+
+        google.script.run
+          .withSuccessHandler(function (res) {
+            btnInPdf.disabled = false;
+
+            if (!res.success) {
+              msgPdf.className = 'adr-save-msg err';
+              msgPdf.textContent = '❌ ' + res.message;
+              return;
+            }
+
+            msgPdf.className = 'adr-save-msg ok';
+            msgPdf.innerHTML = '✔ Đã tạo — <a href="' + res.url + '" target="_blank" rel="noopener">Mở PDF</a>';
+          })
+          .withFailureHandler(function (err) {
+            btnInPdf.disabled = false;
+            msgPdf.className = 'adr-save-msg err';
+            msgPdf.textContent = '❌ Lỗi hệ thống: ' + err.message;
+          })
+          .xuatPdfBaoCao(soDong);
       });
+
+      panel.appendChild(toolbar);
     }
 
     // ---------- TÌM KIẾM ----------
