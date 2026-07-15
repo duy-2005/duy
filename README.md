@@ -618,11 +618,127 @@
       .tabs { top: 68px; padding: 0 8px; }
       .tab-btn { padding: 13px 14px; font-size: 13.5px; }
       .card { padding: 16px; }
-
       .list-headbar { display: none; }
       .adr-summary { grid-template-columns: 18px 1fr; grid-auto-rows: auto; row-gap: 8px; }
       .adr-detail-grid { grid-template-columns: 1fr; }
     }
+
+    /* ============ TAB KHO BÁO CÁO & SWIPE TO REVEAL ============ */
+    .thang-box { 
+      margin-bottom: 12px; 
+      border: 1px solid var(--line); 
+      border-radius: 12px; 
+      background: #fff; 
+      box-shadow: var(--shadow-sm); 
+    }
+    .thang-box summary { 
+      background-color: var(--red-50); 
+      padding: 14px 16px; 
+      font-weight: 700; 
+      cursor: pointer; 
+      color: var(--red-700); 
+      font-size: 14px; 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      border-radius: 12px; 
+      transition: background 0.15s; 
+    }
+    .thang-box[open] summary { 
+      border-bottom-left-radius: 0; 
+      border-bottom-right-radius: 0; 
+      border-bottom: 1px dashed var(--red-200); 
+    }
+    .thang-box summary:hover { background-color: var(--red-100); }
+    
+    .swipe-wrapper {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE */
+      border-bottom: 1px solid var(--line);
+    }
+    .swipe-wrapper::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
+    
+    .swipe-track {
+      display: flex;
+      width: max-content;
+      min-width: 100%;
+    }
+    
+    .file-item { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 12px 16px; 
+      transition: background 0.12s; 
+      flex: 1 0 100%; 
+      scroll-snap-align: start;
+    }
+    .file-item:hover { background: var(--bg); }
+    .file-item.active { background: var(--red-50); border-left: 3px solid var(--red-600); padding-left: 13px; }
+    
+    .file-name { 
+      color: var(--ink); 
+      cursor: pointer; 
+      font-size: 13.5px; 
+      font-weight: 600; 
+      flex: 1; 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+      white-space: nowrap; 
+    }
+    .file-name i { color: var(--muted); font-size: 16px; }
+    .file-item.active .file-name { color: var(--red-700); }
+    .file-item.active .file-name i { color: var(--red-500); }
+    
+    .swipe-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px 0 8px;
+      scroll-snap-align: end;
+      background: #fff; 
+    }
+    
+    .btn-gui-mail { 
+      background: #ecfdf3; 
+      color: #15803d; 
+      border: 1.5px solid #bbf7d0; 
+      padding: 6px 12px; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-size: 12px; 
+      font-weight: 700; 
+      font-family: inherit;
+      transition: transform 0.1s; 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 6px; 
+    }
+    .btn-gui-mail:hover { background: #dcfce7; transform: translateY(-1px); }
+    .btn-gui-mail:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .btn-xoa-file {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1.5px solid #fecaca;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: inherit;
+      transition: transform 0.1s, background 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-xoa-file:hover { background: #fee2e2; transform: translateY(-1px); }
+    .btn-xoa-file:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
   </style>
 </head>
 <body>
@@ -663,6 +779,8 @@
       <button class="tab-btn active" data-tab="tab-form"><i class="fa-solid fa-file-pen"></i> Nhập báo cáo</button>
       <button class="tab-btn" data-tab="tab-list"><i class="fa-solid fa-table-list"></i> Danh sách ADR</button>
       <button class="tab-btn" data-tab="tab-thongke" id="btnTabThongKe"><i class="fa-solid fa-chart-pie"></i> Thống kê</button>
+      <!-- NÚT MỚI: KHO BÁO CÁO -->
+      <button class="tab-btn" data-tab="tab-khobaocao"><i class="fa-regular fa-folder-open"></i> Kho báo cáo</button>
     </div>
 
     <div class="container">
@@ -915,6 +1033,59 @@
         </div>
       </div>
 
+      <!-- ===================== TAB 4: KHO BÁO CÁO (KÉO SANG ĐỂ XÓA/MAIL) ===================== -->
+      <div id="tab-khobaocao" class="tab-content">
+        <div class="master-detail-layout">
+          
+          <!-- Cột trái: Danh sách file nhóm theo tháng -->
+          <div class="master-detail-left">
+            <div class="card" style="padding: 18px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--red-100);">
+                <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--ink);">
+                  <i class="fa-brands fa-google-drive" style="color: var(--red-500); margin-right: 6px;"></i> Dữ liệu Drive
+                </h3>
+                <button class="adr-btn-sm adr-btn-print" onclick="refreshKhoBaoCao()" style="padding: 6px 12px;">
+                  <i class="fa-solid fa-rotate-right"></i> Làm mới
+                </button>
+              </div>
+
+              <!-- Trạng thái Loading -->
+              <div id="khoLoadingMsg" style="display: none;">
+                <div class="spinner-wrap">
+                  <div class="spinner"></div>
+                  <div>Đang tải file từ Drive...</div>
+                </div>
+              </div>
+
+              <!-- Trạng thái Trống -->
+              <div id="khoEmptyMsg" class="detail-panel-empty" style="display: none; padding: 40px 10px;">
+                <i class="fa-regular fa-folder-closed"></i>
+                <div>Thư mục hiện tại chưa có báo cáo nào.</div>
+              </div>
+
+              <!-- Nơi đổ dữ liệu tháng -->
+              <div id="vungDanhSachKho" style="max-height: calc(100vh - 270px); overflow-y: auto; padding-right: 4px;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Cột phải: Iframe hiển thị PDF -->
+          <div class="master-detail-right">
+            <div class="card detail-panel-card" style="padding: 0; overflow: hidden; height: calc(100vh - 160px); display: flex; flex-direction: column;">
+              
+              <div id="khoChuaChon" class="detail-panel-empty" style="height: 100%;">
+                <i class="fa-regular fa-file-pdf"></i>
+                <div>Chọn 1 báo cáo bên trái để xem bản in<br><span style="font-size: 12px; margin-top:8px; display:inline-block;">(Vuốt/Kéo báo cáo sang trái để Gửi mail hoặc Xóa)</span></div>
+              </div>
+              
+              <iframe id="khoPdfViewer" width="100%" height="100%" style="border: none; display: none;" src=""></iframe>
+            
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div> <!-- Kết thúc thẻ div container -->
 
   </div> <!-- Kết thúc thẻ div main-app -->
@@ -1010,12 +1181,9 @@
         btn.classList.add('active');
         document.getElementById(btn.dataset.tab).classList.add('active');
 
-        if (btn.dataset.tab === 'tab-list') {
-          loadPatients();
-        }
-        if (btn.dataset.tab === 'tab-thongke') {
-          loadThongKe();
-        }
+        if (btn.dataset.tab === 'tab-list') { loadPatients(); }
+        if (btn.dataset.tab === 'tab-thongke') { loadThongKe(); }
+        if (btn.dataset.tab === 'tab-khobaocao') { loadKhoBaoCao(); }
       });
     });
 
@@ -1701,6 +1869,191 @@
           }
         }
       });
+    }
+
+    // ================================================================
+    // ---------- TAB 4: KHO BÁO CÁO TỪ DRIVE (SWIPE TO REVEAL) -------
+    // ================================================================
+    var daTaiKhoBaoCao = false;
+
+    function refreshKhoBaoCao() {
+      daTaiKhoBaoCao = false;
+      document.getElementById('khoPdfViewer').style.display = 'none';
+      document.getElementById('khoChuaChon').style.display = 'flex';
+      loadKhoBaoCao();
+    }
+
+    function loadKhoBaoCao() {
+      if (daTaiKhoBaoCao) return;
+      daTaiKhoBaoCao = true;
+
+      document.getElementById('khoLoadingMsg').style.display = 'block';
+      document.getElementById('khoEmptyMsg').style.display = 'none';
+      document.getElementById('vungDanhSachKho').innerHTML = '';
+
+      google.script.run
+        .withSuccessHandler(function(duLieu) {
+          document.getElementById('khoLoadingMsg').style.display = 'none';
+          ve_kho_bao_cao(duLieu);
+        })
+        .withFailureHandler(function(err) {
+          document.getElementById('khoLoadingMsg').style.display = 'none';
+          document.getElementById('vungDanhSachKho').innerHTML = '<div style="color:var(--red-600); text-align:center; padding: 20px; font-weight:600;">❌ Lỗi: ' + err.message + '</div>';
+        })
+        .layDuLieuKhoBaoCao(); 
+    }
+
+    function ve_kho_bao_cao(duLieuNhom) {
+      var vungChua = document.getElementById('vungDanhSachKho');
+      var cacThang = Object.keys(duLieuNhom);
+      
+      if (cacThang.length === 0) {
+        document.getElementById('khoEmptyMsg').style.display = 'flex';
+        return;
+      }
+
+      cacThang.forEach(function(thang, index) {
+        var details = document.createElement('details');
+        details.className = 'thang-box';
+        if (index === 0) details.open = true; 
+
+        var summary = document.createElement('summary');
+        summary.innerHTML = '<i class="fa-solid fa-calendar-days"></i> ' + thang + ' <span style="color:var(--muted); font-size:12px; margin-left:auto;">' + duLieuNhom[thang].length + ' file</span>';
+        details.appendChild(summary);
+
+        var contentDiv = document.createElement('div');
+        
+        duLieuNhom[thang].forEach(function(file) {
+          
+          // --- CẤU TRÚC KÉO SANG (SWIPE TO REVEAL) ---
+          var swipeWrapper = document.createElement('div');
+          swipeWrapper.className = 'swipe-wrapper';
+
+          var swipeTrack = document.createElement('div');
+          swipeTrack.className = 'swipe-track';
+
+          // 1. Phần hiển thị tên file (Bấm vào để xem)
+          var itemDiv = document.createElement('div');
+          itemDiv.className = 'file-item';
+          
+          var spanTen = document.createElement('div');
+          spanTen.className = 'file-name';
+          spanTen.innerHTML = '<i class="fa-solid fa-file-pdf"></i> ' + file.tenFile;
+          
+          spanTen.onclick = function() {
+            document.querySelectorAll('.file-item').forEach(function(el){ el.classList.remove('active'); });
+            itemDiv.classList.add('active');
+            document.getElementById('khoChuaChon').style.display = 'none';
+            var iframe = document.getElementById('khoPdfViewer');
+            iframe.style.display = 'block';
+            iframe.src = file.url;
+          };
+
+          itemDiv.appendChild(spanTen);
+
+          // 2. Phần nút bấm ẩn (Kéo sang trái để hiện)
+          var swipeActions = document.createElement('div');
+          swipeActions.className = 'swipe-actions';
+
+          var btnMail = document.createElement('button');
+          btnMail.className = 'btn-gui-mail';
+          btnMail.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Mail';
+          btnMail.onclick = function(e) {
+            e.stopPropagation(); 
+            guiBaoCaoMail(file.id, btnMail);
+          };
+
+          var btnXoa = document.createElement('button');
+          btnXoa.className = 'btn-xoa-file';
+          btnXoa.innerHTML = '<i class="fa-solid fa-trash-can"></i> Xóa';
+          btnXoa.onclick = function(e) {
+            e.stopPropagation();
+            xoaBaoCaoGiaoDien(file.id, btnXoa, swipeWrapper);
+          };
+
+          swipeActions.appendChild(btnMail);
+          swipeActions.appendChild(btnXoa);
+
+          // Ráp các mảnh lại với nhau
+          swipeTrack.appendChild(itemDiv);
+          swipeTrack.appendChild(swipeActions);
+          swipeWrapper.appendChild(swipeTrack);
+          contentDiv.appendChild(swipeWrapper);
+        });
+
+        details.appendChild(contentDiv);
+        vungChua.appendChild(details);
+      });
+    }
+
+    function guiBaoCaoMail(fileId, btnElement) {
+      var xacNhan = confirm("Bạn có chắc chắn muốn gửi báo cáo này đến danh sách email mặc định?");
+      if (!xacNhan) return;
+
+      var htmlCu = btnElement.innerHTML;
+      btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      btnElement.disabled = true;
+
+      google.script.run
+        .withSuccessHandler(function(ketQua) {
+          if (ketQua.thanhCong) {
+            btnElement.innerHTML = '<i class="fa-solid fa-check"></i> Đã gửi';
+            btnElement.style.background = '#dcfce7';
+          } else {
+            alert("Lỗi: " + ketQua.tinNhan);
+            btnElement.innerHTML = htmlCu;
+            btnElement.disabled = false;
+          }
+          
+          setTimeout(function() {
+             btnElement.innerHTML = htmlCu;
+             btnElement.disabled = false;
+             btnElement.style.background = '';
+          }, 3000);
+        })
+        .withFailureHandler(function(err) {
+          alert("Lỗi hệ thống: " + err.message);
+          btnElement.innerHTML = htmlCu;
+          btnElement.disabled = false;
+        })
+        .guiBaoCaoQuaEmail(fileId);
+    }
+
+    function xoaBaoCaoGiaoDien(fileId, btnElement, wrapperElement) {
+      var xacNhan = confirm("Báo cáo này sẽ bị chuyển vào Thùng rác Drive.\nBạn có chắc chắn muốn xóa?");
+      if (!xacNhan) return;
+
+      var htmlCu = btnElement.innerHTML;
+      btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      btnElement.disabled = true;
+
+      google.script.run
+        .withSuccessHandler(function(ketQua) {
+          if (ketQua.thanhCong) {
+            // Hiệu ứng thu hẹp rồi biến mất mượt mà
+            wrapperElement.style.transition = "opacity 0.3s, height 0.3s, padding 0.3s";
+            wrapperElement.style.opacity = "0";
+            wrapperElement.style.height = "0";
+            wrapperElement.style.padding = "0";
+            setTimeout(function() {
+              wrapperElement.remove(); // Xóa hẳn phần tử HTML
+              
+              // Ẩn màn hình xem PDF đi nếu đang xem file vừa xóa
+              document.getElementById('khoPdfViewer').style.display = 'none';
+              document.getElementById('khoChuaChon').style.display = 'flex';
+            }, 300);
+          } else {
+            alert("Lỗi: " + ketQua.tinNhan);
+            btnElement.innerHTML = htmlCu;
+            btnElement.disabled = false;
+          }
+        })
+        .withFailureHandler(function(err) {
+          alert("Lỗi hệ thống: " + err.message);
+          btnElement.innerHTML = htmlCu;
+          btnElement.disabled = false;
+        })
+        .xoaBaoCaoDrive(fileId);
     }
   </script>
 
