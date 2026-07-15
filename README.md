@@ -739,6 +739,15 @@
     }
     .btn-xoa-file:hover { background: #fee2e2; transform: translateY(-1px); }
     .btn-xoa-file:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* CSS Thêm vào: Checkbox tích chọn file */
+    .cb-chon-file { margin-right: 12px; width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; accent-color: var(--red-600); }
+
+    /* CSS Thêm vào: MODAL (POPUP) GỬI EMAIL */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(31, 36, 48, 0.4); backdrop-filter: blur(2px); z-index: 99999; display: flex; align-items: center; justify-content: center; }
+    .modal-content { background: #fff; width: 450px; max-width: 90%; padding: 26px; border-radius: 16px; box-shadow: var(--shadow-lg); border: 1px solid var(--line); animation: modalFadeIn 0.2s ease-out; }
+    @keyframes modalFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
   </style>
 </head>
 <body>
@@ -1044,9 +1053,17 @@
                 <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--ink);">
                   <i class="fa-brands fa-google-drive" style="color: var(--red-500); margin-right: 6px;"></i> Dữ liệu Drive
                 </h3>
-                <button class="adr-btn-sm adr-btn-print" onclick="refreshKhoBaoCao()" style="padding: 6px 12px;">
-                  <i class="fa-solid fa-rotate-right"></i> Làm mới
-                </button>
+                
+                <!-- THÊM: CỤM NÚT GỬI NHIỀU FILE VÀ LÀM MỚI -->
+                <div style="display: flex; gap: 8px;">
+                  <button id="btnGuiNhieuFile" class="adr-btn-sm adr-btn-save" onclick="moModalGuiNhieuFile()" style="padding: 6px 12px; display: none;">
+                    <i class="fa-solid fa-paper-plane"></i> Gửi (<span id="soLuongFileChon">0</span>)
+                  </button>
+                  <button class="adr-btn-sm adr-btn-print" onclick="refreshKhoBaoCao()" style="padding: 6px 12px;">
+                    <i class="fa-solid fa-rotate-right"></i> Làm mới
+                  </button>
+                </div>
+
               </div>
 
               <!-- Trạng thái Loading -->
@@ -1075,7 +1092,7 @@
               
               <div id="khoChuaChon" class="detail-panel-empty" style="height: 100%;">
                 <i class="fa-regular fa-file-pdf"></i>
-                <div>Chọn 1 báo cáo bên trái để xem bản in<br><span style="font-size: 12px; margin-top:8px; display:inline-block;">(Vuốt/Kéo báo cáo sang trái để Gửi mail hoặc Xóa)</span></div>
+                <div>Chọn báo cáo bên trái để xem bản in<br><span style="font-size: 12px; margin-top:8px; display:inline-block; font-weight: 400;">(Vuốt/Kéo sang trái để Xóa/Gửi, hoặc tích ô vuông để Gửi nhiều file)</span></div>
               </div>
               
               <iframe id="khoPdfViewer" width="100%" height="100%" style="border: none; display: none;" src=""></iframe>
@@ -1090,13 +1107,52 @@
 
   </div> <!-- Kết thúc thẻ div main-app -->
 
+  <!-- BẢNG POPUP (MODAL) CHỌN DANH SÁCH GỬI MAIL -->
+  <div id="modalChonEmail" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h3 style="margin-top:0; margin-bottom: 6px; color:var(--ink); font-size:18px;">
+        <i class="fa-solid fa-envelope-open-text" style="color:var(--red-600);"></i> Chọn người nhận báo cáo
+      </h3>
+      <p id="emailFileName" style="font-size:13px; color:var(--muted); margin-bottom: 20px; font-weight:600; line-height: 1.5;"></p>
+      
+      <label>1. Chọn từ danh sách có sẵn:</label>
+      <div id="emailCheckboxes" style="display:flex; flex-direction:column; gap:12px; margin-bottom: 20px; max-height: 200px; overflow-y:auto; padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: #faf7f7;">
+        
+        <label style="display:flex; align-items:center; gap:8px; font-size:13.5px; cursor:pointer;">
+          <input type="checkbox" value="damduy800@gmail.com" checked> damduy800@gmail.com
+        </label>
+        
+        <label style="display:flex; align-items:center; gap:8px; font-size:13.5px; cursor:pointer;">
+          <input type="checkbox" value="giamdoc@benhvien.com"> Ban Giám Đốc (giamdoc@benhvien.com)
+        </label>
+
+        <label style="display:flex; align-items:center; gap:8px; font-size:13.5px; cursor:pointer;">
+          <input type="checkbox" value="duoclamchu@benhvien.com"> Tổ Dược Lâm Sàng (duoclamchu@benhvien.com)
+        </label>
+      </div>
+
+      <label>2. Nhập thêm Email khác (không bắt buộc):</label>
+      <p style="font-size: 11px; color: var(--muted); margin-top: -4px; margin-bottom: 6px;">Ngăn cách nhiều email bằng dấu phẩy (,)</p>
+      <input type="text" id="emailKhac" placeholder="vd: bacsia@gmail.com, canbob@gmail.com" style="margin-bottom: 24px;">
+      
+      <div style="display:flex; justify-content:flex-end; gap:12px;">
+        <button class="adr-btn-sm adr-btn-cancel" onclick="dongModalEmail()">Hủy bỏ</button>
+        <button class="adr-btn-sm adr-btn-save" onclick="thucHienGuiMail()"><i class="fa-solid fa-paper-plane"></i> Thực hiện gửi</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ================================================================
-    // BIẾN TOÀN CỤC BẢO MẬT PHÂN QUYỀN
+    // BIẾN TOÀN CỤC BẢO MẬT PHÂN QUYỀN VÀ KHO BÁO CÁO
     // ================================================================
     var KHOA_DANG_NHAP = "";
     var MAT_KHAU_DANG_NHAP = ""; // Lưu tạm để gửi lên máy chủ khi thống kê
     var QUYEN_XEM_THONG_KE = false;
+
+    var daTaiKhoBaoCao = false;
+    var mangFileIdDangChon = []; // Mảng chứa các ID file chuẩn bị gửi mail
+    var dangChonBtnMail = null;  // Biến lưu trạng thái của nút bấm Gửi Mail
 
     // ================================================================
     // ---------- XỬ LÝ ĐĂNG NHẬP KHOA PHÒNG ----------
@@ -1874,12 +1930,12 @@
     // ================================================================
     // ---------- TAB 4: KHO BÁO CÁO TỪ DRIVE (SWIPE TO REVEAL) -------
     // ================================================================
-    var daTaiKhoBaoCao = false;
 
     function refreshKhoBaoCao() {
       daTaiKhoBaoCao = false;
       document.getElementById('khoPdfViewer').style.display = 'none';
       document.getElementById('khoChuaChon').style.display = 'flex';
+      capNhatNutGuiNhieu(); // Đặt lại nút Gửi nhiều
       loadKhoBaoCao();
     }
 
@@ -1901,6 +1957,18 @@
           document.getElementById('vungDanhSachKho').innerHTML = '<div style="color:var(--red-600); text-align:center; padding: 20px; font-weight:600;">❌ Lỗi: ' + err.message + '</div>';
         })
         .layDuLieuKhoBaoCao(); 
+    }
+
+    // --- HÀM KIỂM TRA TÍCH ĐỂ HIỆN NÚT GỬI TỔNG ---
+    function capNhatNutGuiNhieu() {
+      var cacOChon = document.querySelectorAll('.cb-chon-file:checked');
+      var btn = document.getElementById('btnGuiNhieuFile');
+      if (cacOChon.length > 0) {
+        btn.style.display = 'inline-flex';
+        document.getElementById('soLuongFileChon').textContent = cacOChon.length;
+      } else {
+        btn.style.display = 'none';
+      }
     }
 
     function ve_kho_bao_cao(duLieuNhom) {
@@ -1938,7 +2006,23 @@
           
           var spanTen = document.createElement('div');
           spanTen.className = 'file-name';
-          spanTen.innerHTML = '<i class="fa-solid fa-file-pdf"></i> ' + file.tenFile;
+
+          // Ô vuông chọn file
+          var cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.className = 'cb-chon-file';
+          cb.value = file.id;
+          cb.dataset.ten = file.tenFile;
+          cb.onclick = function(e) {
+            e.stopPropagation();
+            capNhatNutGuiNhieu();
+          };
+
+          var nhanHienThi = document.createElement('span');
+          nhanHienThi.innerHTML = '<i class="fa-solid fa-file-pdf"></i> ' + file.tenFile;
+          
+          spanTen.appendChild(cb);
+          spanTen.appendChild(nhanHienThi);
           
           spanTen.onclick = function() {
             document.querySelectorAll('.file-item').forEach(function(el){ el.classList.remove('active'); });
@@ -1960,7 +2044,7 @@
           btnMail.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Mail';
           btnMail.onclick = function(e) {
             e.stopPropagation(); 
-            guiBaoCaoMail(file.id, btnMail);
+            moModalEmail(file.id, file.tenFile, btnMail); // GỌI MODAL
           };
 
           var btnXoa = document.createElement('button');
@@ -1986,39 +2070,6 @@
       });
     }
 
-    function guiBaoCaoMail(fileId, btnElement) {
-      var xacNhan = confirm("Bạn có chắc chắn muốn gửi báo cáo này đến danh sách email mặc định?");
-      if (!xacNhan) return;
-
-      var htmlCu = btnElement.innerHTML;
-      btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-      btnElement.disabled = true;
-
-      google.script.run
-        .withSuccessHandler(function(ketQua) {
-          if (ketQua.thanhCong) {
-            btnElement.innerHTML = '<i class="fa-solid fa-check"></i> Đã gửi';
-            btnElement.style.background = '#dcfce7';
-          } else {
-            alert("Lỗi: " + ketQua.tinNhan);
-            btnElement.innerHTML = htmlCu;
-            btnElement.disabled = false;
-          }
-          
-          setTimeout(function() {
-             btnElement.innerHTML = htmlCu;
-             btnElement.disabled = false;
-             btnElement.style.background = '';
-          }, 3000);
-        })
-        .withFailureHandler(function(err) {
-          alert("Lỗi hệ thống: " + err.message);
-          btnElement.innerHTML = htmlCu;
-          btnElement.disabled = false;
-        })
-        .guiBaoCaoQuaEmail(fileId);
-    }
-
     function xoaBaoCaoGiaoDien(fileId, btnElement, wrapperElement) {
       var xacNhan = confirm("Báo cáo này sẽ bị chuyển vào Thùng rác Drive.\nBạn có chắc chắn muốn xóa?");
       if (!xacNhan) return;
@@ -2037,10 +2088,9 @@
             wrapperElement.style.padding = "0";
             setTimeout(function() {
               wrapperElement.remove(); // Xóa hẳn phần tử HTML
-              
-              // Ẩn màn hình xem PDF đi nếu đang xem file vừa xóa
               document.getElementById('khoPdfViewer').style.display = 'none';
               document.getElementById('khoChuaChon').style.display = 'flex';
+              capNhatNutGuiNhieu(); // Đếm lại nút tích
             }, 300);
           } else {
             alert("Lỗi: " + ketQua.tinNhan);
@@ -2054,6 +2104,100 @@
           btnElement.disabled = false;
         })
         .xoaBaoCaoDrive(fileId);
+    }
+
+    // --- MỞ BẢNG CHỌN MAIL (Gửi lẻ) ---
+    function moModalEmail(fileId, tenFile, btnElement) {
+      mangFileIdDangChon = [fileId]; 
+      dangChonBtnMail = btnElement;
+      document.getElementById('emailFileName').innerHTML = "📄 Báo cáo: <b>" + tenFile + "</b>";
+      document.getElementById('emailKhac').value = '';
+      document.getElementById('modalChonEmail').style.display = 'flex';
+    }
+
+    // --- MỞ BẢNG CHỌN MAIL (Gửi tổng nhiều file) ---
+    function moModalGuiNhieuFile() {
+      var cacOChon = document.querySelectorAll('.cb-chon-file:checked');
+      if (cacOChon.length === 0) return;
+
+      mangFileIdDangChon = []; 
+      var hienThiTenThongBao = "";
+      
+      cacOChon.forEach(function(cb) {
+        mangFileIdDangChon.push(cb.value);
+        hienThiTenThongBao += "📄 " + cb.dataset.ten + "<br>";
+      });
+
+      dangChonBtnMail = document.getElementById('btnGuiNhieuFile');
+      document.getElementById('emailFileName').innerHTML = "<b>Các báo cáo sẽ gửi (" + cacOChon.length + "):</b><br>" + hienThiTenThongBao;
+      document.getElementById('emailKhac').value = '';
+      document.getElementById('modalChonEmail').style.display = 'flex';
+    }
+
+    // --- ĐÓNG BẢNG MÀ KHÔNG LÀM MẤT TRÍ NHỚ ---
+    function dongModalEmail() {
+      document.getElementById('modalChonEmail').style.display = 'none';
+    }
+
+    // --- THỰC HIỆN GỬI ---
+    function thucHienGuiMail() {
+      var danhSachGui = [];
+      var checkboxes = document.querySelectorAll('#emailCheckboxes input[type="checkbox"]:checked');
+      checkboxes.forEach(function(cb) { danhSachGui.push(cb.value); });
+      
+      var emailKhac = document.getElementById('emailKhac').value.trim();
+      if (emailKhac) {
+        var arrKhac = emailKhac.split(',');
+        arrKhac.forEach(function(e) { var emailTrim = e.trim(); if (emailTrim) danhSachGui.push(emailTrim); });
+      }
+
+      if (danhSachGui.length === 0) {
+        alert("Vui lòng chọn hoặc nhập ít nhất 1 địa chỉ email!");
+        return;
+      }
+
+      // Chỉ ẩn giao diện bảng
+      dongModalEmail();
+
+      // Đổi trạng thái nút bấm
+      var htmlCu = dangChonBtnMail.innerHTML;
+      dangChonBtnMail.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
+      dangChonBtnMail.disabled = true;
+
+      var nutHienTai = dangChonBtnMail;
+      var fileCanGui = mangFileIdDangChon;
+
+      google.script.run
+        .withSuccessHandler(function(ketQua) {
+          if (ketQua.thanhCong) {
+            nutHienTai.innerHTML = '<i class="fa-solid fa-check"></i> Đã gửi';
+            nutHienTai.style.background = '#dcfce7';
+            
+            // Tắt toàn bộ tick ở các ô báo cáo khi gửi thành công
+            document.querySelectorAll('.cb-chon-file:checked').forEach(function(cb){ cb.checked = false; });
+            capNhatNutGuiNhieu(); // Ẩn luôn nút gửi tổng
+
+          } else {
+            alert("Lỗi: " + ketQua.tinNhan);
+            nutHienTai.innerHTML = htmlCu;
+            nutHienTai.disabled = false;
+          }
+          
+          setTimeout(function() {
+             if (nutHienTai) {
+                nutHienTai.innerHTML = htmlCu;
+                nutHienTai.disabled = false;
+                nutHienTai.style.background = '';
+             }
+             mangFileIdDangChon = [];
+             dangChonBtnMail = null;
+          }, 3000);
+        })
+        .withFailureHandler(function(err) {
+          alert("Lỗi hệ thống: " + err.message);
+          nutHienTai.innerHTML = htmlCu;
+          nutHienTai.disabled = false;
+        }).guiBaoCaoQuaEmail(fileCanGui, danhSachGui); 
     }
   </script>
 
